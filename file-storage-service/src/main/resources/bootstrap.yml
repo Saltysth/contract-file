@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: contract-file-storage-service
+  
+  cloud:
+    nacos:
+      server-addr: ${NACOS_SERVER:localhost:18848}
+      username: ${NACOS_USERNAME:nacos}
+      password: ${NACOS_PASSWORD:change_me}
+      
+      discovery:
+        server-addr: ${NACOS_SERVER:localhost:18848}
+        namespace: ${NACOS_NAMESPACE:public}
+        group: CONTRACT_REVIEW
+        enabled: true
+        heart-beat:
+          enabled: true
+          interval: 5000
+          timeout: 15000
+        metadata:
+          management:
+            context-path: /actuator
+          health:
+            check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+
+      config:
+        namespace: ${NACOS_NAMESPACE:dev}
+        group: CONTRACT_REVIEW
+        file-extension: yml
+        # 配置文件名格式: ${spring.application.name}-${spring.profiles.active}.${file-extension}
+        # 例如: file-storage-service-dev.yml
