@@ -34,6 +34,73 @@
 | MinIO | 文件存储 |
 | Nacos 3.1 | 服务发现与配置中心 |
 
+## 环境配置
+
+### 必需的环境变量
+
+在启动服务前，需要配置以下环境变量或修改配置文件中的默认值：
+
+| 环境变量 | 说明 | 默认值 |
+|---------|------|--------|
+| `DB_URL` | PostgreSQL 数据库连接地址 | `jdbc:postgresql://localhost:5432/postgres` |
+| `DB_USERNAME` | 数据库用户名 | `postgres` |
+| `DB_PASSWORD` | 数据库密码 | **需配置** |
+| `MINIO_ENDPOINT` | MinIO 服务地址 | `http://localhost:9000` |
+| `MINIO_ACCESS_KEY` | MinIO 访问密钥 | **需配置** |
+| `MINIO_SECRET_KEY` | MinIO 秘密密钥 | **需配置** |
+| `NACOS_SERVER` | Nacos 服务器地址 | `localhost:18848` |
+| `NACOS_USERNAME` | Nacos 用户名 | `nacos` |
+| `NACOS_PASSWORD` | Nacos 密码 | **需配置** |
+| `RUOYI_SECRET` | 若依远程认证密钥 | **需配置** |
+
+### 配置方式
+
+**方式一：环境变量（推荐）**
+
+```bash
+export DB_PASSWORD=your_database_password
+export MINIO_ACCESS_KEY=your_minio_access_key
+export MINIO_SECRET_KEY=your_minio_secret_key
+export NACOS_PASSWORD=your_nacos_password
+export RUOYI_SECRET=your_ruoyi_secret_key
+
+mvn spring-boot:run
+```
+
+**方式二：修改配置文件**
+
+编辑 `file-storage-service/src/main/resources/application.yml`，将所有 `change_me` 替换为实际值：
+
+```yaml
+spring:
+  datasource:
+    password: ${DB_PASSWORD:change_me}  # 替换为实际密码
+
+minio:
+  access-key: ${MINIO_ACCESS_KEY:change_me}  # 替换为实际密钥
+  secret-key: ${MINIO_SECRET_KEY:change_me}  # 替换为实际密钥
+
+ruoyi:
+  remote-auth:
+    secret: ${RUOYI_SECRET:change_me}  # 替换为实际密钥
+```
+
+编辑 `file-storage-service/src/main/resources/bootstrap.yml`：
+
+```yaml
+spring:
+  cloud:
+    nacos:
+      password: ${NACOS_PASSWORD:change_me}  # 替换为实际密码
+```
+
+### 依赖服务启动顺序
+
+1. **PostgreSQL** (端口 5432) - 创建数据库
+2. **MinIO** (端口 9000) - 创建存储桶
+3. **Nacos** (端口 18848) - 配置命名空间和分组
+4. **本服务** (端口 10000) - 启动文件存储服务
+
 ## 快速开始
 
 ```bash
